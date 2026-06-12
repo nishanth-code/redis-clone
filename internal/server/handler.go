@@ -70,6 +70,9 @@ func (s *TCPServer) Execute(
 
 		return "FALSE"
 
+	case "PING":
+		return "pong"
+
 	default:
 
 		return "INVALID COMMAND"

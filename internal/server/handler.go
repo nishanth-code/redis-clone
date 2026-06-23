@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"net"
 	"strings"
+
+	"github.com/nishanth-code/redis-clone/internal/WAL"
 )
 
 func (s *TCPServer) handleConnection(
@@ -38,6 +40,18 @@ func (s *TCPServer) Execute(
 
 	case "SET":
 
+		err := s.wal.Append(
+			wal.LogEntry{
+				Operation: cmd.Action,
+				Key:    cmd.Key,
+				Value:  cmd.Value,
+				
+			},
+		)
+		if err != nil {
+		return "WAL ERROR"
+	}
+
 		s.store.Set(
 			cmd.Key,
 			cmd.Value,
@@ -57,6 +71,17 @@ func (s *TCPServer) Execute(
 		return value
 
 	case "DEL":
+		err := s.wal.Append(
+			wal.LogEntry{
+				Operation: cmd.Action,
+				Key:    cmd.Key,
+				Value:  cmd.Value,
+				
+			},
+		)
+		if err != nil {
+		return "WAL ERROR"
+	}
 
 		s.store.Delete(cmd.Key)
 
